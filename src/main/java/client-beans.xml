@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+
+	<bean id="chatUIImpl" class="client.view.ChatUIImpl" />
+
+	<bean id="room" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+		<property name="serviceUrl" value="rmi://localhost/ChatRoomImpl" />
+		<property name="serviceInterface" value="server.IChatRoom" />
+	</bean>
+
+	  <bean id="chatUserImpl" class="client.user.ChatUserImpl">
+		<property name="room" ref="room" />
+	</bean>
+
+	<bean id="chatControllerImpl" class="client.controller.ChatControllerImpl"
+		init-method="init">
+		<property name="view" ref="chatUIImpl" />
+		<property name="user" ref="chatUserImpl" />
+		<property name="room" ref="room" />
+	</bean>
+
+	<aop:aspectj-autoproxy />
+	<bean class="aspects.LogAspect" />
+	<aop:aspectj-autoproxy />
+	<bean class="aspects.AuthenticationAspect" />
+
+</beans>
